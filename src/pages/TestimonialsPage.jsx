@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -10,34 +10,47 @@ const ClientTestimonials = () => {
       role: "President & CEO, Ansrsource",
       photo: "https://ansrsource.com/wp-content/uploads/2022/06/Headshots-1.png",
       logo: "https://ansrsource.com/wp-content/uploads/elementor/thumbs/ansrsource-with-tagline-original_break-02-new-qum3i8u2w81sqeo0fbu6mizgjoynke3fwt9pdk1avs.png",
-      review: "The Makonis team are resolute professionals who listen to your business needs and help guide you toward talent that fits both technically and culturally. They are our long-term trusted partners.",
+      review:
+        "The Makonis team are resolute professionals who listen to your business needs and help guide you toward talent that fits both technically and culturally. They are our long-term trusted partners.",
     },
     {
       name: "Ashish Joshi",
       role: "COO, Redwood Software Inc.",
-      photo: "https://cdn.theorg.com/8589a507-b587-45d7-bd11-ee05879622d3_thumb.jpg",
+      photo:
+        "https://cdn.theorg.com/8589a507-b587-45d7-bd11-ee05879622d3_thumb.jpg",
       logo: "https://www.redwood.com/wp-content/uploads/Redwood_Logo_White.svg",
-      review: "We highly recommend Makonis to any employer looking for hiring top talent. They are professional, genuine and highly invested in success. We can count on them every time.",
+      review:
+        "We highly recommend Makonis to any employer looking for hiring top talent. They are professional, genuine and highly invested in success. We can count on them every time.",
     },
     {
       name: "Sudhakar Krishnamachari",
       role: "Head of Engineering, LoanIQ",
       photo: "https://randomuser.me/api/portraits/men/40.jpg",
       logo: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Panasonic_logo_blue.svg",
-      review: "Makonis helped our LoanIQ team scale faster with skilled engineers and offered excellent support throughout the hiring process.",
+      review:
+        "Makonis helped our LoanIQ team scale faster with skilled engineers and offered excellent support throughout the hiring process.",
     },
     {
       name: "Priya Sharma",
       role: "VP, Tech at FinPoint",
       photo: "https://randomuser.me/api/portraits/women/44.jpg",
       logo: "https://upload.wikimedia.org/wikipedia/commons/f/fb/Placeholder_company_logo.svg",
-      review: "Exceptional service! Their speed, accuracy, and client support have consistently exceeded our expectations.",
+      review:
+        "Exceptional service! Their speed, accuracy, and client support have consistently exceeded our expectations. Their dedication and detail orientation in all hiring cycles have made a real difference to our productivity and onboarding experience.",
     },
   ];
+
+  const [expanded, setExpanded] = useState(Array(testimonials.length).fill(false));
 
   useEffect(() => {
     document.title = "Client Testimonials | Makonis";
   }, []);
+
+  const toggleExpand = (index) => {
+    const newExpanded = [...expanded];
+    newExpanded[index] = !newExpanded[index];
+    setExpanded(newExpanded);
+  };
 
   return (
     <div
@@ -68,7 +81,6 @@ const ClientTestimonials = () => {
         autoplay={{
           delay: 4000,
           disableOnInteraction: false,
-          reverseDirection: false,
         }}
         speed={800}
         modules={[Autoplay]}
@@ -89,7 +101,8 @@ const ClientTestimonials = () => {
                 borderRadius: "18px",
                 borderTop: "4px solid #00A0E9",
                 padding: "35px 30px",
-                minHeight: "360px",
+                height: "430px",
+                width: "100%",
                 maxWidth: "380px",
                 marginTop: "10px",
                 display: "flex",
@@ -101,14 +114,15 @@ const ClientTestimonials = () => {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-6px)";
-                e.currentTarget.style.boxShadow = "0 0 30px rgba(0,160,233,0.5)";
+                e.currentTarget.style.boxShadow =
+                  "0 0 30px rgba(0,160,233,0.5)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 0 15px rgba(0,160,233,0.3)";
+                e.currentTarget.style.boxShadow =
+                  "0 0 15px rgba(0,160,233,0.3)";
               }}
             >
-              {/* Opening Quote */}
               <div
                 style={{
                   fontSize: "40px",
@@ -121,22 +135,52 @@ const ClientTestimonials = () => {
                 “
               </div>
 
-              {/* Review Text */}
+              {/* Review Text with "Read More" functionality */}
               <p
                 style={{
                   fontSize: "1.05rem",
                   color: "#0a1992",
                   marginLeft: "20px",
-                  marginTop: "30px",
+                  marginTop: "40px",
                   fontWeight: "500",
                   fontStyle: "italic",
                   lineHeight: "1.8",
+                  maxHeight: expanded[index] ? "none" : "75px",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
                 }}
               >
                 {item.review}
               </p>
 
-              {/* Star Rating */}
+              {!expanded[index] && item.review.length > 160 && (
+                <span
+                  onClick={() => toggleExpand(index)}
+                  style={{
+                    color: "#0055cc",
+                    fontWeight: "bold",
+                    marginLeft: "20px",
+                    cursor: "pointer",
+                  }}
+                >
+                  ...read more
+                </span>
+              )}
+
+              {expanded[index] && item.review.length > 160 && (
+                <span
+                  onClick={() => toggleExpand(index)}
+                  style={{
+                    color: "#0055cc",
+                    fontWeight: "bold",
+                    marginLeft: "20px",
+                    cursor: "pointer",
+                  }}
+                >
+                  show less
+                </span>
+              )}
+
               <div
                 style={{
                   textAlign: "left",
@@ -148,7 +192,6 @@ const ClientTestimonials = () => {
                 ★★★★★
               </div>
 
-              {/* Closing Quote */}
               <div
                 style={{
                   textAlign: "right",
@@ -160,7 +203,6 @@ const ClientTestimonials = () => {
                 ”
               </div>
 
-              {/* Footer */}
               <div className="d-flex justify-content-between align-items-center mt-4">
                 <div className="d-flex align-items-center gap-3">
                   <img
