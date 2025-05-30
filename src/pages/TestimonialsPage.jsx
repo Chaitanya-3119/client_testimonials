@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -11,16 +11,15 @@ const ClientTestimonials = () => {
       photo: "https://ansrsource.com/wp-content/uploads/2022/06/Headshots-1.png",
       logo: "https://ansrsource.com/wp-content/uploads/elementor/thumbs/ansrsource-with-tagline-original_break-02-new-qum3i8u2w81sqeo0fbu6mizgjoynke3fwt9pdk1avs.png",
       review:
-        "The Makonis team are resolute professionals who listen to your business needs and help guide you toward talent that fits both technically and culturally. They are our long-term trusted partners.",
+        "Makonis consistently stands out because they genuinely listen. They understand your business's current state and challenges, then expertly guide you to talent that fits both your capability needs and your organizational culture. I've partnered with Sanjay and his team for years and consider them invaluable to my organization's success.",
     },
     {
       name: "Ashish Joshi",
       role: "COO, Redwood Software Inc.",
-      photo:
-        "https://cdn.theorg.com/8589a507-b587-45d7-bd11-ee05879622d3_thumb.jpg",
+      photo: "https://cdn.theorg.com/8589a507-b587-45d7-bd11-ee05879622d3_thumb.jpg",
       logo: "https://www.redwood.com/wp-content/uploads/Redwood_Logo_White.svg",
       review:
-        "We highly recommend Makonis to any employer looking for hiring top talent. They are professional, genuine and highly invested in success. We can count on them every time.",
+        "We highly recommend Makonis to any employer looking for hiring top talent. They are professional, genuine and highly invested in finding you the best talent. We can count on them in finding right talent within time and budget.",
     },
     {
       name: "Sudhakar Krishnamachari",
@@ -28,7 +27,7 @@ const ClientTestimonials = () => {
       photo: "https://randomuser.me/api/portraits/men/40.jpg",
       logo: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Panasonic_logo_blue.svg",
       review:
-        "Makonis helped our LoanIQ team scale faster with skilled engineers and offered excellent support throughout the hiring process.",
+        "Taking over Finastra's LoanIQ engineering in 2019, I found traditional hiring too slow. Makonis quickly supplied quality contract-to-hire engineers for testing and programming, even boosting their training investment. Our collaboration has been very positive; I wish them ongoing success.",
     },
     {
       name: "Priya Sharma",
@@ -40,17 +39,21 @@ const ClientTestimonials = () => {
     },
   ];
 
-  const [expanded, setExpanded] = useState(Array(testimonials.length).fill(false));
+  const [hoverIndex, setHoverIndex] = useState(null);
+  const popoverRef = useRef();
 
   useEffect(() => {
     document.title = "Client Testimonials | Makonis";
-  }, []);
 
-  const toggleExpand = (index) => {
-    const newExpanded = [...expanded];
-    newExpanded[index] = !newExpanded[index];
-    setExpanded(newExpanded);
-  };
+    const handleClickOutside = (e) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target)) {
+        setHoverIndex(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div
@@ -59,6 +62,7 @@ const ClientTestimonials = () => {
         background: "#0c1f38",
         minHeight: "100vh",
         paddingTop: "100px",
+        position: "relative",
       }}
     >
       <h2
@@ -73,15 +77,12 @@ const ClientTestimonials = () => {
       </h2>
 
       <Swiper
-        className="mt-5"
+        className="mt-2"
         slidesPerView={3}
         spaceBetween={30}
         loop={true}
         centeredSlides={false}
-        autoplay={{
-          delay: 4000,
-          disableOnInteraction: false,
-        }}
+        autoplay={{ delay: 4000, disableOnInteraction: false }}
         speed={800}
         modules={[Autoplay]}
         style={{ paddingBottom: "60px", paddingLeft: "20px" }}
@@ -93,6 +94,7 @@ const ClientTestimonials = () => {
               display: "flex",
               justifyContent: "center",
               height: "100%",
+              position: "relative",
             }}
           >
             <div
@@ -123,6 +125,7 @@ const ClientTestimonials = () => {
                   "0 0 15px rgba(0,160,233,0.3)";
               }}
             >
+              {/* Quote */}
               <div
                 style={{
                   fontSize: "40px",
@@ -135,31 +138,34 @@ const ClientTestimonials = () => {
                 “
               </div>
 
-              {/* Review Text with "Read More" functionality */}
-              <p
+              {/* Clamped Review */}
+              <div
                 style={{
-                  fontSize: "1.05rem",
-                  color: "#0a1992",
-                  marginLeft: "20px",
                   marginTop: "40px",
+                  marginLeft: "20px",
+                  color: "#0a1992",
+                  fontSize: "1.05rem",
                   fontWeight: "500",
                   fontStyle: "italic",
                   lineHeight: "1.8",
-                  maxHeight: expanded[index] ? "none" : "75px",
                   overflow: "hidden",
-                  textOverflow: "ellipsis",
+                  display: "-webkit-box",
+                  WebkitBoxOrient: "vertical",
+                  WebkitLineClamp: 5,
                 }}
               >
                 {item.review}
-              </p>
+              </div>
 
-              {!expanded[index] && item.review.length > 160 && (
+              {/* Read More Button */}
+              {item.review.length > 150 && (
                 <span
-                  onClick={() => toggleExpand(index)}
+                  onClick={() => setHoverIndex(index)}
                   style={{
                     color: "#0055cc",
                     fontWeight: "bold",
                     marginLeft: "20px",
+                    marginTop: "8px",
                     cursor: "pointer",
                   }}
                 >
@@ -167,20 +173,7 @@ const ClientTestimonials = () => {
                 </span>
               )}
 
-              {expanded[index] && item.review.length > 160 && (
-                <span
-                  onClick={() => toggleExpand(index)}
-                  style={{
-                    color: "#0055cc",
-                    fontWeight: "bold",
-                    marginLeft: "20px",
-                    cursor: "pointer",
-                  }}
-                >
-                  show less
-                </span>
-              )}
-
+              {/* Stars */}
               <div
                 style={{
                   textAlign: "left",
@@ -192,6 +185,7 @@ const ClientTestimonials = () => {
                 ★★★★★
               </div>
 
+              {/* Closing Quote */}
               <div
                 style={{
                   textAlign: "right",
@@ -203,6 +197,7 @@ const ClientTestimonials = () => {
                 ”
               </div>
 
+              {/* Footer */}
               <div className="d-flex justify-content-between align-items-center mt-4">
                 <div className="d-flex align-items-center gap-3">
                   <img
@@ -235,6 +230,41 @@ const ClientTestimonials = () => {
                   }}
                 />
               </div>
+
+              {/* Popover Box for Full Review */}
+              {hoverIndex === index && (
+                <div
+                  ref={popoverRef}
+                  style={{
+                    position: "absolute",
+                    bottom: "100px",
+                    left: "20px",
+                    right: "20px",
+                    background: "#f4faff",
+                    color: "#0a1992",
+                    padding: "15px",
+                    borderRadius: "12px",
+                    boxShadow: "0 0 20px rgba(0,0,0,0.15)",
+                    zIndex: 99,
+                    fontStyle: "italic",
+                    animation: "fadeIn 0.3s ease-in-out",
+                  }}
+                >
+                  {item.review}
+                  <div
+                    style={{
+                      textAlign: "right",
+                      marginTop: "10px",
+                      fontWeight: "bold",
+                      color: "#0055cc",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => setHoverIndex(null)}
+                  >
+                    show less
+                  </div>
+                </div>
+              )}
             </div>
           </SwiperSlide>
         ))}
