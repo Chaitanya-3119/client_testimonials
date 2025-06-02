@@ -39,21 +39,21 @@ const ClientTestimonials = () => {
     },
   ];
 
-  const [hoverIndex, setHoverIndex] = useState(null);
-  const popoverRef = useRef();
+  const [expandedIndex, setExpandedIndex] = useState(null);
+  const swiperRef = useRef(null);
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
-    document.title = "Client Testimonials | Makonis";
-
-    const handleClickOutside = (e) => {
-      if (popoverRef.current && !popoverRef.current.contains(e.target)) {
-        setHoverIndex(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    if (expandedIndex !== null) {
+      swiperRef.current?.autoplay?.stop();
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        setExpandedIndex(null);
+        swiperRef.current?.autoplay?.start();
+      }, 60000);
+    }
+    return () => clearTimeout(timeoutRef.current);
+  }, [expandedIndex]);
 
   return (
     <div
@@ -61,210 +61,175 @@ const ClientTestimonials = () => {
       style={{
         background: "#0c1f38",
         minHeight: "100vh",
-        paddingTop: "100px",
-        position: "relative",
+        paddingTop: "80px",
+        overflowX: "hidden",
       }}
     >
       <h2
         className="text-center mb-2"
-        style={{
-          color: "#ffffff",
-          fontWeight: "800",
-          fontSize: "2.8rem",
-        }}
+        style={{ color: "#ffffff", fontWeight: "800", fontSize: "2.4rem" }}
       >
         What Our Clients Say
       </h2>
 
+      <div
+        style={{
+          width: "60px",
+          height: "4px",
+          backgroundColor: "#00A0E9",
+          margin: "0 auto 24px auto",
+          borderRadius: "10px",
+        }}
+      ></div>
+
       <Swiper
-        className="mt-2"
-        slidesPerView={3}
-        spaceBetween={30}
+        onSwiper={(swiper) => (swiperRef.current = swiper)}
+        spaceBetween={20}
         loop={true}
-        centeredSlides={false}
-        autoplay={{ delay: 4000, disableOnInteraction: false }}
+        autoplay={{
+          delay: 4000,
+          disableOnInteraction: false,
+        }}
         speed={800}
         modules={[Autoplay]}
-        style={{ paddingBottom: "60px", paddingLeft: "20px" }}
+        breakpoints={{
+          0: { slidesPerView: 1.05 },
+          576: { slidesPerView: 1.2 },
+          768: { slidesPerView: 2 },
+          992: { slidesPerView: 2.5 },
+          1200: { slidesPerView: 3 },
+        }}
+        style={{ paddingBottom: "60px", paddingLeft: "15px" }}
       >
         {testimonials.map((item, index) => (
           <SwiperSlide
             key={index}
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              height: "100%",
-              position: "relative",
-            }}
+            style={{ display: "flex", justifyContent: "center" }}
           >
             <div
               style={{
                 background: "#ffffff",
-                borderRadius: "18px",
+                borderRadius: "16px",
                 borderTop: "4px solid #00A0E9",
-                padding: "35px 30px",
-                height: "430px",
+                padding: "20px 18px",
                 width: "100%",
-                maxWidth: "380px",
-                marginTop: "10px",
+                maxWidth: "340px",
+                minHeight: "430px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
-                position: "relative",
-                boxShadow: "0 0 15px rgba(0,160,233,0.3)",
-                transition: "transform 0.3s ease, box-shadow 0.3s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-6px)";
-                e.currentTarget.style.boxShadow =
-                  "0 0 30px rgba(0,160,233,0.5)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow =
-                  "0 0 15px rgba(0,160,233,0.3)";
+                boxShadow: "0 0 12px rgba(0,160,233,0.25)",
               }}
             >
-              {/* Quote */}
+              {/* Review Block */}
               <div
                 style={{
-                  fontSize: "40px",
-                  color: "#00A0E9",
-                  position: "absolute",
-                  top: "20px",
-                  left: "25px",
+                  flexGrow: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
                 }}
               >
-                “
-              </div>
+                {/* Opening Quote */}
+                <div style={{ fontSize: "30px", color: "#00A0E9", lineHeight: "1" }}>“</div>
 
-              {/* Clamped Review */}
-              <div
-                style={{
-                  marginTop: "40px",
-                  marginLeft: "20px",
-                  color: "#0a1992",
-                  fontSize: "1.05rem",
-                  fontWeight: "500",
-                  fontStyle: "italic",
-                  lineHeight: "1.8",
-                  overflow: "hidden",
-                  display: "-webkit-box",
-                  WebkitBoxOrient: "vertical",
-                  WebkitLineClamp: 5,
-                }}
-              >
-                {item.review}
-              </div>
-
-              {/* Read More Button */}
-              {item.review.length > 150 && (
-                <span
-                  onClick={() => setHoverIndex(index)}
+                {/* Review Text */}
+                <blockquote
                   style={{
-                    color: "#0055cc",
-                    fontWeight: "bold",
-                    marginLeft: "20px",
-                    marginTop: "8px",
-                    cursor: "pointer",
+                    borderLeft: "4px solid #00A0E9",
+                    paddingLeft: "14px",
+                    margin: "10px 0",
+                    color: "#0a1992",
+                    fontSize: "0.95rem",
+                    fontWeight: "500",
+                    fontStyle: "italic",
+                    lineHeight: "1.7",
+                    overflow: "hidden",
+                    display: "-webkit-box",
+                    WebkitBoxOrient: "vertical",
+                    WebkitLineClamp:
+                      expandedIndex === index ? "unset" : 5,
                   }}
                 >
-                  ...read more
-                </span>
-              )}
+                  {item.review}
+                </blockquote>
 
-              {/* Stars */}
-              <div
-                style={{
-                  textAlign: "left",
-                  fontSize: "18px",
-                  color: "#FFD700",
-                  margin: "10px 0 0 20px",
-                }}
-              >
+                {/* Closing Quote */}
+                <div
+                  style={{
+                    fontSize: "24px",
+                    color: "#00A0E9",
+                    textAlign: "right",
+                    marginTop: "4px",
+                  }}
+                >
+                  ”
+                </div>
+
+                {/* Read More / Less */}
+                {item.review.length > 150 && (
+                  <span
+                    onClick={() =>
+                      expandedIndex === index
+                        ? setExpandedIndex(null)
+                        : setExpandedIndex(index)
+                    }
+                    style={{
+                      color: "#0055cc",
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                      fontSize: "0.9rem",
+                      marginTop: "6px",
+                    }}
+                  >
+                    {expandedIndex === index ? "show less" : "...read more"}
+                  </span>
+                )}
+              </div>
+
+              {/* Star Rating */}
+              <div style={{ fontSize: "16px", color: "#FFD700", margin: "10px 0 8px" }}>
                 ★★★★★
               </div>
 
-              {/* Closing Quote */}
-              <div
-                style={{
-                  textAlign: "right",
-                  fontSize: "26px",
-                  color: "#00A0E9",
-                  paddingRight: "10px",
-                }}
-              >
-                ”
-              </div>
-
               {/* Footer */}
-              <div className="d-flex justify-content-between align-items-center mt-4">
-                <div className="d-flex align-items-center gap-3">
+              <div className="d-flex justify-content-between align-items-center">
+                <div className="d-flex align-items-center gap-2">
                   <img
                     src={item.photo}
                     alt={item.name}
                     style={{
-                      width: "56px",
-                      height: "56px",
+                      width: "44px",
+                      height: "44px",
                       borderRadius: "50%",
-                      border: "3px solid #1a6eff",
+                      border: "2px solid #1a6eff",
                       objectFit: "cover",
                     }}
                   />
                   <div>
-                    <h6 className="mb-0 fw-bold" style={{ color: "#0a1992" }}>
+                    <h6
+                      className="mb-0 fw-bold"
+                      style={{ color: "#0a1992", fontSize: "0.95rem" }}
+                    >
                       {item.name}
                     </h6>
-                    <small style={{ color: "#0a1992bb" }}>{item.role}</small>
+                    <small style={{ color: "#0a1992bb", fontSize: "0.8rem" }}>
+                      {item.role}
+                    </small>
                   </div>
                 </div>
                 <img
                   src={item.logo}
                   alt="company"
                   style={{
-                    height: "45px",
-                    maxWidth: "100px",
+                    height: "36px",
+                    maxWidth: "80px",
                     objectFit: "contain",
-                    marginLeft: "10px",
                     filter: "grayscale(0%)",
+                    marginLeft: "8px",
                   }}
                 />
               </div>
-
-              {/* Popover Box for Full Review */}
-              {hoverIndex === index && (
-                <div
-                  ref={popoverRef}
-                  style={{
-                    position: "absolute",
-                    bottom: "100px",
-                    left: "20px",
-                    right: "20px",
-                    background: "#f4faff",
-                    color: "#0a1992",
-                    padding: "15px",
-                    borderRadius: "12px",
-                    boxShadow: "0 0 20px rgba(0,0,0,0.15)",
-                    zIndex: 99,
-                    fontStyle: "italic",
-                    animation: "fadeIn 0.3s ease-in-out",
-                  }}
-                >
-                  {item.review}
-                  <div
-                    style={{
-                      textAlign: "right",
-                      marginTop: "10px",
-                      fontWeight: "bold",
-                      color: "#0055cc",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => setHoverIndex(null)}
-                  >
-                    show less
-                  </div>
-                </div>
-              )}
             </div>
           </SwiperSlide>
         ))}
