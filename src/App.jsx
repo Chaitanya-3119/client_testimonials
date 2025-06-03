@@ -12,6 +12,8 @@ import TestingPage from './pages/TestingPage'
 import EmbeddedPage from './pages/EmbeddedPage'
 import TeamPage from './pages/TeamPage'
 import TestimonialsPage from './pages/TestimonialsPage'
+import PhysicalDesignPage from './pages/PhysicalDesign';
+
 
 // Wrapper to access route-aware features like useLocation
 function AppContent() {
@@ -33,6 +35,8 @@ function AppContent() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/team" element={<TeamPage />} />
         <Route path="/testimonials" element={<TestimonialsPage />} />
+        <Route path="/physical-design" element={<PhysicalDesignPage />} />
+
       </Routes>
       <Footer />
       {showChatBot && <ChatBot />}
