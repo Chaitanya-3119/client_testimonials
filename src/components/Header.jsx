@@ -133,7 +133,7 @@ const Header = () => {
   };
 
   const logoImgStyle = {
-    height: '50px',
+    height: '60px',
     filter: 'drop-shadow(0 4px 8px rgba(0, 160, 233, 0.3))',
     transition: 'all 0.3s ease',
   };
